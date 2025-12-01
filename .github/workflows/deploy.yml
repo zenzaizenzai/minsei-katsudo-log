@@ -44,6 +44,11 @@ jobs:
         run: |
           echo "Listing dist/ files";
           ls -la dist || true
+      - name: Show dist/index.html head for debugging
+        if: always()
+        run: |
+          echo "Top of dist/index.html";
+          head -n 200 dist/index.html || true
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
