@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
+      // base can be set via VITE_BASE environment variable. For GitHub Pages set it to '/minsei-katsudo-log/'
+      base: env.VITE_BASE || '/',
       server: {
         port: 3000,
         host: '0.0.0.0',
