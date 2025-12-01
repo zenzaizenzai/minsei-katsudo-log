@@ -16,18 +16,24 @@ export const downloadCSV = (records: ActivityRecord[], year: number, month: numb
     return;
   }
 
+  // Helper to quote string for CSV (handle quotes inside text)
+  const q = (str: string | undefined | null) => {
+    if (str === undefined || str === null) return '""';
+    return `"${String(str).replace(/"/g, '""')}"`;
+  };
+
   // CSV Header
-  const header = ['日付', '種別', '活動内容', '時間(分)', '開始時刻', '対応人数', 'メモ'];
+  const header = ['日付', '種別', '活動内容', '時間(分)', '開始時刻', '対応人数', 'メモ'].map(q);
   
   // CSV Body
   const rows = targetRecords.map(r => [
-    r.date,
-    r.activityType === ActivityType.JIDOU ? '児童' : '民生',
-    r.categoryName,
-    r.durationMinutes.toString(),
-    r.startTime || '-',
-    r.count ? r.count.toString() : '-',
-    `"${(r.memo || '').replace(/"/g, '""')}"` // Escape quotes
+    q(r.date),
+    q(r.activityType === ActivityType.JIDOU ? '児童' : '民生'),
+    q(r.categoryName),
+    q(r.durationMinutes.toString()),
+    q(r.startTime || '-'),
+    q(r.count ? r.count.toString() : '-'),
+    q(r.memo)
   ]);
 
   const csvContent = [
@@ -35,9 +41,11 @@ export const downloadCSV = (records: ActivityRecord[], year: number, month: numb
     ...rows.map(row => row.join(','))
   ].join('\r\n');
 
-  // Add BOM for Excel compatibility (UTF-8)
-  const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-  const blob = new Blob([bom, csvContent], { type: 'text/csv;charset=utf-8;' });
+  // Add BOM for Excel compatibility (UTF-8 with BOM)
+  // \uFEFF is the Byte Order Mark (BOM) character.
+  // When saved as UTF-8, it becomes 0xEF, 0xBB, 0xBF.
+  const bom = "\uFEFF";
+  const blob = new Blob([bom + csvContent], { type: 'text/csv' });
   
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
