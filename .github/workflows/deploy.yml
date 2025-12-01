@@ -1,10 +1,14 @@
 name: Deploy to GitHub Pages
-
 on:
   push:
     branches:
       - main
+  # Allows manual execution from the Actions UI
+  workflow_dispatch: {}
 
+concurrency:
+  group: 'deploy-pages-${{ github.ref }}'
+  cancel-in-progress: true
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -13,6 +17,12 @@ jobs:
       pages: write
       id-token: write
     steps:
+      - name: CI debug - Action versions
+        run: |
+          echo "Using these action versions:";
+          echo "  configure-pages@v5";
+          echo "  upload-pages-artifact@v4";
+          echo "  deploy-pages@v4";
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -36,12 +46,12 @@ jobs:
           ls -la dist || true
 
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
