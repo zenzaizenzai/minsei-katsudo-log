@@ -29,9 +29,16 @@ export const Settings: React.FC<SettingsProps> = ({ categories, onUpdateCategori
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('この項目を削除してもよろしいですか？')) {
+    if (window.confirm('この項目を削除してもよろしいですか？\n※これまでの記録は削除されませんが、今後選択できなくなります。')) {
       onUpdateCategories(categories.filter(c => c.id !== id));
     }
+  };
+
+  const handleNameChange = (id: string, newName: string) => {
+    const updated = categories.map(c => 
+      c.id === id ? { ...c, name: newName } : c
+    );
+    onUpdateCategories(updated);
   };
 
   const moveOrder = (index: number, direction: 'up' | 'down') => {
@@ -92,20 +99,33 @@ export const Settings: React.FC<SettingsProps> = ({ categories, onUpdateCategori
 
         {/* List */}
         <div className="space-y-3">
-          <h3 className="font-bold text-lg ml-1">現在のパネル一覧</h3>
+          <div className="flex items-center justify-between ml-1">
+             <h3 className="font-bold text-lg">現在のパネル一覧</h3>
+             <span className="text-sm text-gray-500">名前をタップして編集</span>
+          </div>
+          
           {categories.map((cat, index) => (
             <div key={cat.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex items-center gap-3">
               <div className="flex flex-col gap-1">
-                <button onClick={() => moveOrder(index, 'up')} disabled={index === 0} className="text-gray-400 disabled:opacity-20 p-1"><ArrowUp /></button>
-                <button onClick={() => moveOrder(index, 'down')} disabled={index === categories.length - 1} className="text-gray-400 disabled:opacity-20 p-1"><ArrowDown /></button>
+                <button onClick={() => moveOrder(index, 'up')} disabled={index === 0} className="text-gray-400 disabled:opacity-20 p-1 active:bg-gray-100 rounded"><ArrowUp /></button>
+                <button onClick={() => moveOrder(index, 'down')} disabled={index === categories.length - 1} className="text-gray-400 disabled:opacity-20 p-1 active:bg-gray-100 rounded"><ArrowDown /></button>
               </div>
-              <div className={`flex-1 font-bold text-lg ${cat.type === ActivityType.JIDOU ? 'text-pink-800' : 'text-blue-800'}`}>
-                {cat.name}
-                <span className="ml-2 text-xs text-gray-400 border border-gray-200 px-1 rounded">
-                   {cat.type === ActivityType.JIDOU ? '児童' : '民生'}
-                </span>
+              
+              <div className="flex-1">
+                <input
+                    type="text"
+                    value={cat.name}
+                    onChange={(e) => handleNameChange(cat.id, e.target.value)}
+                    className={`w-full text-lg font-bold border-b border-gray-300 focus:border-blue-500 focus:bg-blue-50 outline-none rounded-t px-1 py-1 transition-colors ${cat.type === ActivityType.JIDOU ? 'text-pink-900' : 'text-blue-900'}`}
+                />
+                <div className="mt-1">
+                   <span className={`text-xs px-2 py-0.5 rounded border ${cat.type === ActivityType.JIDOU ? 'bg-pink-50 text-pink-600 border-pink-200' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>
+                      {cat.type === ActivityType.JIDOU ? '児童' : '民生'}
+                   </span>
+                </div>
               </div>
-              <button onClick={() => handleDelete(cat.id)} className="p-3 text-red-500 bg-red-50 rounded-lg">
+
+              <button onClick={() => handleDelete(cat.id)} className="p-3 text-red-500 bg-red-50 rounded-lg active:bg-red-100">
                 <X />
               </button>
             </div>
