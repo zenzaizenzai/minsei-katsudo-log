@@ -17,6 +17,7 @@ export const downloadCSV = (records: ActivityRecord[], year: number, month: numb
   }
 
   // Helper to quote string for CSV (handle quotes inside text)
+  // Excel is less likely to garble if all fields are quoted
   const q = (str: string | undefined | null) => {
     if (str === undefined || str === null) return '""';
     return `"${String(str).replace(/"/g, '""')}"`;
@@ -42,10 +43,9 @@ export const downloadCSV = (records: ActivityRecord[], year: number, month: numb
   ].join('\r\n');
 
   // Add BOM for Excel compatibility (UTF-8 with BOM)
-  // \uFEFF is the Byte Order Mark (BOM) character.
-  // When saved as UTF-8, it becomes 0xEF, 0xBB, 0xBF.
   const bom = "\uFEFF";
-  const blob = new Blob([bom + csvContent], { type: 'text/csv' });
+  // Explicitly set charset=utf-8 in the MIME type
+  const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
   
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);

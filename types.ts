@@ -23,4 +23,4 @@ export interface ActivityRecord {
   count?: number; // 対応人数
 }
 
-export type ViewState = 'HOME' | 'FORM' | 'LIST' | 'SETTINGS';
+export type ViewState = 'HOME' | 'FORM' | 'LIST' | 'SETTINGS' | 'GUIDE';

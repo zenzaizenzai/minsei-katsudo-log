@@ -5,7 +5,9 @@ import { Dashboard } from './components/Dashboard';
 import { ActivityForm } from './components/ActivityForm';
 import { ActivityList } from './components/ActivityList';
 import { Settings } from './components/Settings';
+import { Guide } from './components/Guide';
 import { loadCategories, saveCategories, loadRecords, saveRecords } from './services/storageService';
+import { HelpCircle } from 'lucide-react';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('HOME');
@@ -80,6 +82,12 @@ const App: React.FC = () => {
             onBack={() => setView('HOME')}
           />
         );
+      case 'GUIDE':
+        return (
+          <Guide 
+            onBack={() => setView('HOME')}
+          />
+        );
       default:
         return <div>Error</div>;
     }
@@ -89,8 +97,15 @@ const App: React.FC = () => {
     <div className="max-w-md mx-auto min-h-screen bg-surface flex flex-col shadow-2xl relative">
       {/* App Header (Simple) */}
       {view === 'HOME' && (
-        <header className="bg-white p-4 text-center border-b border-gray-200">
-          <h1 className="text-xl-large font-bold text-primary">民生委員 活動記録</h1>
+        <header className="bg-white p-3 flex items-center justify-between border-b border-gray-200">
+          <h1 className="text-xl-large font-bold text-primary pl-2">民生委員 活動記録</h1>
+          <button 
+            onClick={() => setView('GUIDE')}
+            className="flex flex-col items-center justify-center px-3 py-1 text-gray-600 active:bg-gray-100 rounded-lg"
+          >
+            <HelpCircle size={24} className="mb-0.5" />
+            <span className="text-xs font-bold">使い方</span>
+          </button>
         </header>
       )}
       
